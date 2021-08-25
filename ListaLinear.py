@@ -1,29 +1,21 @@
-class Lista():
+from Produto import Produto
 
-    #~~~~~~~~~~~~~~~~Checklist~~~~~~~~~~~~~~~#
-    # ok -criar lista                        #
-    # destruit lista                         #
-    # ok -limpar lista                       #
-    # inserir elemento por posicao           #
-    # excluir elemento por posicao           #
-    # ok -acessar elemento por posicao usada #
-    # ok -alterar elemento por posicao usada #
-    # combinar duas ou mais listas           #
-    # classificar ou ordenar lista           #
-    # copiar lista                           #
-    # determinar cardinalidade da lista      #
-    # acessar posicao por elemento           #
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+class Lista():
+    #inserir posição x
+    #remover posição x
+    #localizar posicao de um elemento - ok
+    #limpar - ok
 
     def __init__(self, tamanho) -> None:
         """Construtor de lista"""
         self.__tamanho = tamanho
-        self.__lista = [None] * self.getTamanhoTotal()
-        self.__primeiro = -1
-        self.__ultimo = -1
-        # self.__lista = [None, None, 5, 12, 7, None, None, None, None, None]
-        # self.__primeiro = 2
-        # self.__ultimo = 4
+        # self.__lista = [None] * tamanho
+        # self.__primeiro = -1
+        # self.__ultimo = -1
+        self.teste = Produto('Lapis', 5)
+        self.__lista = [self.teste, Produto('Ronei', 1), self.teste, Produto('Lápis', 3), self.teste, Produto('Borracha', 5), None, None, None, None]
+        self.__primeiro = 0
+        self.__ultimo = 5
 
     def __repr__(self) -> str:
         """Retorna a representação da lista"""
@@ -35,55 +27,69 @@ class Lista():
 
     def getRepresentacao(self, string) -> str:
         """Retorna a representação da lista com elementos"""
-        for i in range(self.__primeiro, self.__ultimo + 1):
-            if (i == self.__ultimo):
+        for i in range(self.getIndiceInicial(), self.getIndiceFinal() + 1):
+            if (i == self.getIndiceFinal()):
                 string += str(self.__lista[i])
             else:
-                string += str(self.__lista[i]) + ','
+                string += str(self.__lista[i]) + ', '
         return string
 
     def getTamanhoUsado(self) -> int:
-        """Retorna o tamanho usado da lista
-
-        contagem iniciando em 1
-
-        0 para não usado
-        """
+        """Retorna o tamanho usado da lista"""
         if(self.getIndiceInicial() == -1 and self.getIndiceFinal() == -1):
             return 0
-        elif (self.getIndiceFinal() == self.getIndiceInicial()):
-            return 1
         else:
-            return (self.__ultimo + 1) - self.__primeiro
+            return (self.getIndiceFinal() + 1) - self.getIndiceInicial()
+
+    def getLista(self) -> list:
+        """Retorna a lista"""
+        return self.__lista
 
     def getTamanhoTotal(self) -> int:
-        """Retorna o tamanho total da lista 
-
-        contagem iniciando em 1
-        """
+        """Retorna o tamanho total da lista"""
         return self.__tamanho
 
     def getIndiceInicial(self) -> int:
         """Retorna o índice inicial do espaço usado na lista
 
-        contagem iniciando em 0
-        
-        -1 para não atribuído
-        """
+        -1 para não atribuído"""
         return self.__primeiro
 
     def getIndiceFinal(self) -> int:
         """Retorna o índice final do espaço usado na lista
 
-        contagem iniciando em 0
-
-        -1 para não atribuído
-        """
+        -1 para não atribuído"""
         return self.__ultimo
 
-    def getIndice(self, posicao) -> int:
-        """Retrona a conversão de posição de um array para o index de um array"""
-        return posicao - 1
+    def increasePosicao(self, posicao) -> int:
+        """Converte a posição passada para o índice equivalente"""
+        return self.getIndiceInicial() + posicao - 1
+    
+    def reduceIndice(self, indice) -> int:
+        """Converte o índice passado para a posicao equivalente relativa ao tamanho usado"""
+        return self.getIndiceInicial() - indice + 1
+
+    def getElementoNaPosicao(self, posicao) -> Produto:
+        """Retorna o elemento na posicao passada
+
+        ou False caso não encontrar"""
+        posicao = self.increasePosicao(posicao)
+        if (self.getTamanhoUsado() == 0 or posicao < self.getIndiceInicial() or posicao > self.getIndiceFinal()):
+            return False
+        return self.__lista[posicao]
+
+    def getPosicoesDoElemento(self, elemento) -> any:
+        """Retorna um array com as posições do elemento passado
+
+        ou False caso não encontrar"""
+        if not elemento in self.getLista():
+            return False
+
+        posicoes = []
+        for i in range(self.getIndiceInicial(), self.getIndiceFinal() + 1):
+            if (elemento == self.getElementoNaPosicao(i)):
+                posicoes.append(i)
+        return posicoes
 
     def clearLista(self) -> None:
         """Limpa o intervalo usado e a lista"""
@@ -91,51 +97,33 @@ class Lista():
         self.__primeiro = -1
         self.__ultimo = -1
 
-    def updateElementoNaPosicao(self, elemento, posicao) -> bool:
-        """Atualiza um elemento na posicao"""
+    # def updateElementoNaPosicao(self, elemento, posicao) -> bool:
+    #     """Atualiza um elemento na posicao"""
 
-        #converte a posição para índice
-        posicao = self.getIndice(posicao) + self.getIndiceInicial()
+    #     #converte a posição para índice
+    #     posicao = self.getIndice(posicao) + self.getIndiceInicial()
 
-        #se não houver elementos na lista ou se a posição estiver fora do intervalo da lista o retorno é falso
-        if (self.getTamanhoUsado() == 0 or posicao < self.getIndiceInicial() or posicao > self.getIndiceFinal()):
-            return False
+    #     #se não houver elementos na lista ou se a posição estiver fora do intervalo da lista o retorno é falso
+    #     if (self.getTamanhoUsado() == 0 or posicao < self.getIndiceInicial() or posicao > self.getIndiceFinal()):
+    #         return False
 
-        self.__lista[posicao] = elemento
-        return True
+    #     self.__lista[posicao] = elemento
+    #     return True
 
-    def getElementoNaPosicao(self, posicao) -> int:
-        """Retrona o elemento na posição informada"""
+    # def getElementoNaPosicao(self, posicao) -> int:
+    #     """Retrona o elemento na posição informada"""
 
-        #converte a posição para índice 
-        posicao = self.getIndice(posicao) + self.getIndiceInicial()
+    #     #converte a posição para índice 
+    #     posicao = self.getIndice(posicao) + self.getIndiceInicial()
 
-        #se não houver elementos na lista ou se a posição estiver fora do intervalo da lista o retorno é inexistente
-        if (self.getTamanhoUsado() == 0 or posicao < self.getIndiceInicial() or posicao > self.getIndiceFinal()):
-            return -1
+    #     #se não houver elementos na lista ou se a posição estiver fora do intervalo da lista o retorno é inexistente
+    #     if (self.getTamanhoUsado() == 0 or posicao < self.getIndiceInicial() or posicao > self.getIndiceFinal()):
+    #         return -1
 
-        return self.__lista[posicao]
-
-
+    #     return self.__lista[posicao]
 
 
-    #funções manuais para fins de debug
-    def setLista(self, lista) -> None:
-        self.__lista = lista
-    
-    def setIndiceInicial(self, indice) -> None:
-        self.__primeiro = indice
-
-    def setIndiceFinal(self, indice) -> None:
-        self.__ultimo = indice
-
-    def getConteudo(self) -> str:
-        """Retorna o conteúdo de toda a lista"""
-        return self.__lista
-
-    def getTamanhoTotalLogico(self) -> int:
-        """Retorna o tamanho total da lista
-
-        contagem iniciando em 0
-        """
-        return self.__tamanho - 1
+    # def setElementoNaPosicao(self, elemento,  posicao) -> None:
+    #     """Insere um elemento em uma determinada posição remanejando a menor parte da lista"""
+        
+    #     pass
