@@ -124,6 +124,7 @@ class List():
     def insertElement(self, element, position = None) -> None:
         print(self.getUsedLength())
         print(self.getLength())
+        exit()
 
         if self.getUsedLength() == self.getLength():
             return False

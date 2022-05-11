@@ -14,8 +14,8 @@ lista = List(6)
 print('- exibe a lista: ')
 print(lista)
 
-# print('- insere um elemento na posição')
-# # lista.
+print('- insere um elemento na posição')
+lista.insertElement(produto1)
 
 # print('- limpa a lista')
 # lista.clearList()
