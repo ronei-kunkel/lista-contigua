@@ -4,7 +4,7 @@ from List import List
 
 print('- instancia lista')
 
-produto1 = Product('Teste de produto', 1)
+produto1 = Product('Teste de produto', 1.0)
 
 lista = List(6)
 
@@ -18,7 +18,7 @@ print('- insere um elemento na posição')
 lista.insertElement(produto1)
 
 # print('- limpa a lista')
-# lista.clearList()
+# lista.resetList()
 
 # print('- exibe a lista vazia')
 # print(lista)
