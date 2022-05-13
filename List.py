@@ -1,51 +1,42 @@
 from Product import Product
 
 class List():
-    #inserir posição x
-    #remover posição x
-    #localizar posicao de um elemento - ok
-    #limpar - ok
-
-    # def __init__(self, length) -> None:
-        # """Construtor de lista"""
-        # self.__length = length
-        # self.__list = [None] * self.getLength()
-        # self.__start = -1
-        # self.__end = -1
+    """Responsável pela manipulação de uma lista contígua"""
 
 
-    def __init__(self, length: int) -> None:
-        """Construtor para testar desenvolvimento"""
+    def __init__(self, length) -> None:
+        """Construtor de lista"""
         self.__length = length
-        self.testProduct = Product('Lapis', 5)
-        self.testProduct1 = Product('testeeee', 20)
-        self.__list = [None, Product('Ronei', 1), self.testProduct, Product('Lápis', 3), self.testProduct, Product('Borracha', 5), self.testProduct1, None, None, None]
-        self.__start = 0
-        self.__end = 9
-
-
-    def getTestProduct(self) -> object:
-        """Retorna o produto de teste"""
-        return self.testProduct
+        self.__list = [None] * length
+        self.__start = -1
+        self.__end = -1
 
 
     def __repr__(self) -> str:
         """Retorna a representação da lista"""
-        representation = ''
+        representation = '['
         if self.getUsedLength() == 0:
-            return representation
+            return representation + ']'
         else:
             return self.getRepresentation(representation)
 
 
-    def getRepresentation(self, representation:str) -> str:
+    def getRepresentation(self, representation: str) -> str:
         """Retorna a representação da lista com elementos"""
-        for element in range(self.getPointerIndex('start'), self.getPointerIndex('end') + 1):
-            if element == self.getPointerIndex('end'):
-                representation += str(self.__list[element]) + '\r\n'
+        for index in range(self.getPointerIndex('start'), self.getPointerIndex('end') + 1):
+            if index == self.getPointerIndex('end'):
+                representation += str(self.__list[index]) + ']'
             else:
-                representation += str(self.__list[element]) + '\r\n'
+                representation += str(self.__list[index]) + ','
+
         return representation
+
+
+    def resetList(self) -> None:
+        """Reinicia os ponteiros e a lista"""
+        self.__list = [None] * self.getLength()
+        self.__start = -1
+        self.__end = -1
 
 
     def getPointerIndex(self, pointer: str) -> int:
@@ -62,6 +53,13 @@ class List():
             self.__start = self.getPointerIndex('start') + units
 
 
+    def reducePointerIndex(self, pointer: str = 'end', units: int = 1) -> None:
+        if pointer == 'end':
+            self.__end = self.getPointerIndex('end') - units
+        if pointer == 'start':
+            self.__start = self.getPointerIndex('start') - units
+
+
     def getUsedLength(self) -> int:
         """Retorna o tamanho usado da lista"""
         if self.getPointerIndex('start') == -1 and self.getPointerIndex('end') == -1:
@@ -72,7 +70,12 @@ class List():
 
     def getList(self) -> object:
         """Retorna a lista"""
-        return self
+        return self.__list
+
+
+    # def setList(self, list: list) -> None:
+    #     """define a lista"""
+    #     self.__list = list
 
 
     def getLength(self) -> int:
@@ -82,68 +85,122 @@ class List():
 
     def positionToIndex(self, position: int) -> int:
         """Converte a posição numérica para o índice"""
-        return self.getPointerIndex('start') + position - 1
+        return position - 1
 
 
     def indexToPosition(self, index: int) -> int:
         """Converte o índice para a posição numérica"""
-        return self.getPointerIndex('start') - index + 1
+        return index + 1
 
 
-    def getElementByPosition(self, position: int) -> Product:
-        """Retorna o elemento na posição passada
-
-        ou False caso não encontrar"""
-        position = self.positionToIndex(position)
-        if self.getUsedLength() == 0 or position < self.getPointerIndex('start') or position > self.getPointerIndex('end'):
-            return False
-        return self.__list[position]
-
-
-    def getPositionsByElement(self, element: object) -> any:
-        """Retorna um array com as posições do elemento passado
-
-        ou False caso não encontrar"""
-        if not element in self.getList():
+    def getElementByPosition(self, position: int) -> object:
+        """Retorna o elemento na posição passada \r\n
+        ou None caso não encontrar \r\n
+        ou False caso fora do intervalo da lista"""
+        index = self.positionToIndex(position)
+        if self.getUsedLength() == 0 or index < 0 or self.getLength() <= index:
             return False
 
+        return self.__list[index]
+
+
+    def getPositionsOfElement(self, element: object) -> list:
+        """Retorna um array com as posições do elemento passado \r\n
+        ou False caso não encontrar"""
         positions = []
+        if not element in self.getList():
+            return positions
+
         for element in range(self.getPointerIndex('start'), self.getPointerIndex('end') + 1):
             if (element == self.getElementByPosition(element)):
                 positions.append(element)
+
         return positions
 
 
-    def resetList(self) -> None:
-        """Reinicia os ponteiros e a lista"""
-        self.__list = [None] * self.getLength()
-        self.__start = -1
-        self.__end = -1
-
-
-
-
-
-
-    def insertElement(self, element: object, position: any = None) -> None:
+    def insertElement(self, element: object, position: any = None) -> bool:
         """Insere um elemento na lista"""
         if self.getUsedLength() == self.getLength():
             return False
 
-        if not position:
-            self.insertIntoEnd(element)
+        if position:
+            index = self.positionToIndex(position)
+            if index < 0 or self.getLength() <= index:
+                return False
 
-        self.insertIntoPosition(element, position)
+            self.__insertInto(element, index)
+
+            return True
+        self.__insertInto(element)
+
+        return True
 
 
-    def insertIntoEnd(element: object) -> bool:
-        """Insere o elemento no final da lista"""
-        
+    def __insertInto(self, element: object, index: int = None) -> None:
+        """Remaneja os elementos da lista para adicionar outro elemento na posição informada \r\n
+        ou no final da lista por padrão caso não seja informada a posição"""
+        if not index:
+            if not self.haveEmptyPositionAfterEnd():
+                self.moveElements('up', self.getPointerIndex('start'), self.getPointerIndex('end'))
+
+            return self.insertIntoEnd(element)
+
+        # index = self.positionToIndex(position)
+
+
+    def setElementInPosition(self, element: object, position: int) -> None:
+        self.__list[position] = element
+
+        return True
+
+
+    def haveEmptyPositionAfterEnd(self) -> bool:
+        end = self.getPointerIndex('end')
+        positionOfEnd = self.indexToPosition(end)
+
+        return self.getElementByPosition(positionOfEnd)
+
+
+    def insertIntoEnd(self, element: object) -> None:
+        if self.getPointerIndex('end') == self.getLength():
+            return False
+
+        self.increasePointerIndex('end')
+
+        return self.setElementInPosition(element, self.getPointerIndex('end'))
+
+
+    def moveElements(self, direction: str, initialIndex: int, finalIndex: int) -> None:
+        """Move recursivamente os elementos da lista que estão entre a posição inicial e a final informadas"""
+        if direction == 'up':
+            if initialIndex > finalIndex:
+                return
+
+            # pego meu elemento atual
+            position = self.indexToPosition(initialIndex)
+            currentElement = self.getElementByPosition(position)
+            
+            # insiro ele no indice superior
+
+            # somo dois ao meu initialIndex
+
+
+            
 
 
 
-    def insertIntoPosition(element: object, position: int) -> bool:
-        """Insere o elemento em uma posição determinada"""
+        if direction == 'down':
+            pass
+
+
+
+
+
+
+
+
+
+
 
 
 

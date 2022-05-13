@@ -7,7 +7,7 @@ class Product():
 
     def __repr__(self) -> str:
         """Representação de produto"""
-        return str(self.getName()) + '\r\t $' + str(float(self.getPrice()))
+        return str(self.getName())
 
     def getName(self) -> str:
         """Retorna o nome do produto"""
